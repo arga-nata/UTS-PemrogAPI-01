@@ -66,7 +66,6 @@ const deleteProduk = asyncHandler(async (req, res) => {
 
   if(!data) throw new NotFoundError()
 
-
   return success(res, {
     statusCode: 204
   });
