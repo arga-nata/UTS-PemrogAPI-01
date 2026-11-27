@@ -24,24 +24,38 @@ const getProdukById = asyncHandler(async (req, res) => {
   });
 });
 
-const GetProdukByKategory = asyncHandler(async (req, res) => {
+const getProdukByKategory = asyncHandler(async (req, res) => {
   const data = await ProdukRepository.findByKategoryId(req.id);
 
   return success(res, {
-    data: data,
+    data: {
+      produk:data,
+      total: data.length
+    },
     message: "Berhasil mengambil produk kategori id " + req.id,
   });
 });
 
-const createProduk = asyncHandler(async (req, res) => {
-  const data = await ProdukRepository.create(req.body);
-  console.log(data);
+const createProduk = asyncHandler(
+  async (req, res) => {
+    const data = await ProdukRepository.create(req.body);
 
-  return success(res, {
-    data: data,
-    message: "Berhasil memasukan produk",
-  });
-});
+    return success(res, {
+      data,
+      message: "Berhasil memasukan produk",
+    });
+  },
+  (err, req, res, next) => {
+    if (err.code === "23503") {
+      return next(new NotFoundErrorDB("Kategori tidak ditemukan"));
+    }
+    if (err.code === "23505") {
+      return next(new ConflictError("UNIQUE (23505)"));
+    }
+
+    next(err);
+  }
+);
 
 const updateProduk = asyncHandler(async (req, res) => {
   const data = await ProdukRepository.update(req.id, req.body);
@@ -59,12 +73,18 @@ const patchProduk = asyncHandler(async (req, res) => {
     data: data,
     message: "Berhasil mengupdate produk patch",
   });
+},(err, req, res, next) => {
+  if (err.code === "23505") {
+    return next(new ConflictError("UNIQUE (23505)"));
+  }
+
+  next(err);
 });
 
 const deleteProduk = asyncHandler(async (req, res) => {
   const data = await ProdukRepository.softDelete(req.id);
 
-  if(!data) throw new NotFoundError()
+  if(!data) throw new NotFoundError("Produk tidak ditemukan")
 
   return success(res, {
     statusCode: 204
@@ -74,15 +94,23 @@ const deleteProduk = asyncHandler(async (req, res) => {
 const restoreProduk = asyncHandler(async (req,res)=> {
   const data = await ProdukRepository.restore(req.id)
 
+  if(!data) throw new NotFoundError("Tidak Sedang Dihapus")
+
   return success(res, {
     data: data,
     message: "Berhasil Restore data",
   });
 })
   
-function asyncHandler(fn) {
+function asyncHandler(fn, onError) {
   return (req, res, next) => {
-    Promise.resolve(fn(req, res, next)).catch(next);
+    Promise.resolve(fn(req, res, next)).catch((err) => {
+      if (onError) {
+        return onError(err, req, res, next);
+      }
+
+      next(err);
+    });
   };
 }
 
@@ -116,6 +144,12 @@ class NotFoundError extends AppError {
   }
 }
 
+class NotFoundErrorDB extends AppError {
+  constructor(message = "Resource tidak ditemukan") {
+    super(message, 422, "NOT_FOUND");
+  }
+}
+
 class BadRequestError extends AppError {
   constructor(message = "Request tidak valid") {
     super(message, 400, "BAD_REQUEST");
@@ -131,7 +165,7 @@ class ConflictError extends AppError {
 module.exports = {
   getAllProduk,
   getProdukById,
-  GetProdukByKategory,
+  getProdukByKategory,
   createProduk,
   updateProduk,
   patchProduk,

@@ -10,6 +10,13 @@ function errorMiddleware(err, req, res, next) {
     status = err.status;
     message = err.message;
   }
+  
+   if (err.type === "entity.parse.failed") {
+    return res.status(400).json({
+      status: "error",
+      message: "JSON tidak valid",
+    });
+  }
 
   res.status(statusCode).json({
     status,

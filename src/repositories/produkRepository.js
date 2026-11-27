@@ -45,7 +45,7 @@ class ProdukRepository {
     return rows[0] || null;
   }
 
-  static #allowFields = ["nama_produk", "harga", "stok", "kategori_id"];
+  static #allowFields = ["nama_produk", "harga", "stok", "kategori_id","kode_produk"];
   static async partialUpdate(id, data) {
     const keys = Object.keys(data).filter((key) =>
       ProdukRepository.#allowFields.includes(key),
