@@ -9,4 +9,8 @@ const pool = new Pool({
   database: process.env.DB_NAME,
 });
 
+pool.on("error", (err) => {
+  console.error("Koneksi database bermasalah:", err.message);
+});
+
 module.exports = pool;
