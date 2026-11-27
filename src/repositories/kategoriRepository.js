@@ -28,6 +28,7 @@ class KategoriRepository {
       "DELETE FROM kategori WHERE id = $1 RETURNING *",
       [id],
     );
+
     return query.rows[0];
   }
 }
