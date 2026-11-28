@@ -1,7 +1,11 @@
 const express = require("express");
+const route = require("./routes/index.");
+const errorMiddleware = require("./middlewares/errorMiddleware");
 
 const app = express();
 app.use(express.json());
+app.use(route);
+app.use(errorMiddleware);
 
 // TODO: aktifkan 2 baris ini kalau kategoriRoutes.js & produkRoutes.js
 // dari Arganata (C) dan Eko (D) sudah ada di src/routes/
