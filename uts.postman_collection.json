@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "99a1bd2b-546a-4c26-b73e-c1e8e2af12ca",
     "name": "API Product - Testing",
-    "description": "API Product - Testing\n\nAda dua skenario yang dicakup:\n\n1. **Alur Utama**\n    \n2. **Skenario Error**\n    \n\nSemua request bergantung pada environment **APi Product Env.**",
+    "description": "UTS Pemrograman API\n\nAda dua skenario yang dicakup:\n\n1. **Alur Utama**\n    \n2. **Skenario Error**\n    \n\nSemua request bergantung pada environment **APi Product Env.**",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "30718147"
   },

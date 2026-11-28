@@ -1,23 +1,23 @@
 -- Jalankan skrip ini SETELAH terhubung ke database db_uts (bukan ke "postgres").
 -- Aman dijalankan berulang kali: tabel lama dihapus dulu sebelum dibuat ulang.
-
 DROP TABLE IF EXISTS produk;
+
 DROP TABLE IF EXISTS kategori;
 
 CREATE TABLE kategori (
     id SERIAL PRIMARY KEY,
     nama_kategori VARCHAR(50) NOT NULL UNIQUE,
     deskripsi VARCHAR(200),
-    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    created_at TIMESTAMP NOT NULL DEFAULT NOW ()
 );
 
 CREATE TABLE produk (
     id SERIAL PRIMARY KEY,
-    kategori_id INTEGER NOT NULL REFERENCES kategori(id),
+    kategori_id INTEGER NOT NULL REFERENCES kategori (id),
     kode_produk VARCHAR(20) NOT NULL UNIQUE,
     nama_produk VARCHAR(100) NOT NULL,
     harga INTEGER NOT NULL CHECK (harga > 0),
     stok INTEGER NOT NULL DEFAULT 0 CHECK (stok >= 0),
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    created_at TIMESTAMP NOT NULL DEFAULT NOW (),
     deleted_at TIMESTAMP
 );
