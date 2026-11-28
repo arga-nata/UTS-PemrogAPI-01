@@ -28,7 +28,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"nama_kategori\": \"{{namakategori}}\",\r\n    \"deskripsi\": \"{{deskripsi}}\"\r\n}",
+              "raw": "{\r\n    \"nama_kategori\": \"{{namakategori}}-{{$timestamp}}\",\r\n    \"deskripsi\": \"{{deskripsi}}\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -56,7 +56,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status code is 201\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\npm.test(\"deleted_at harus null\", function () {\r\n    var jsonData = pm.response.json();\r\n    pm.expect(jsonData.data.deleted_at).to.eql(null);\r\n});\r\nconst response = pm.response.json();\r\n\r\npm.environment.set(\"produk_id\", response.data.id);\r\n"
+                  "pm.test(\"Status code is 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\npm.test(\"deleted_at harus null\", function () {\r\n    var jsonData = pm.response.json();\r\n    pm.expect(jsonData.data.deleted_at).to.eql(null);\r\n});\r\nconst response = pm.response.json();\r\n\r\npm.environment.set(\"produk_id\", response.data.id);\r\n"
                 ]
               }
             }
@@ -71,7 +71,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"nama_produk\": \"data awal\",\n    \"harga\": 1000,\n    \"stok\": 10,\n    \"kategori_id\": {{kategori_id}},\n    \"kode_produk\": \"POST1\"\n}",
+              "raw": "{\n    \"nama_produk\": \"data awal\",\n    \"harga\": 1000,\n    \"stok\": 10,\n    \"kategori_id\": {{kategori_id}},\n    \"kode_produk\": \"{{prefix_produk_code}}-{{$timestamp}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -99,7 +99,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\npm.test(\"ID produk sesuai collection variable\", function () {\r\n    var jsonData = pm.response.json();\r\n    var productId = pm.environment.get(\"produk_id\");\r\n\r\n    pm.expect(jsonData.data.id).to.eql(Number(productId));\r\n});"
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\npm.test(\"ID produk sesuai collection variable\", function () {\r\n    var jsonData = pm.response.json();\r\n    var productId = pm.environment.get(\"produk_id\");\r\n\r\n    pm.environment.set(\"put_produk_code\",jsonData.data.kode_produk)\r\n\r\n    pm.expect(jsonData.data.id).to.eql(Number(productId));\r\n\r\n});\r\n\r\n"
                 ]
               }
             }
@@ -122,7 +122,7 @@
           "response": []
         },
         {
-          "name": "[S04] POST /api/kategori/:id/produk (succes)",
+          "name": "[S04] GET /api/kategori/:id/produk (succes)",
           "event": [
             {
               "listen": "test",
@@ -163,6 +163,15 @@
                   "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Data produk berhasil diupdate sesuai environment\", function () {\r\n    const jsonData = pm.response.json();\r\n\r\n    pm.expect(jsonData.data.kode_produk)\r\n        .to.eql(pm.environment.get(\"put_produk_code\"));\r\n\r\n    pm.expect(jsonData.data.nama_produk)\r\n        .to.eql(pm.environment.get(\"put_produk_nama\"));\r\n\r\n    pm.expect(jsonData.data.harga)\r\n        .to.eql(Number(pm.environment.get(\"put_produk_harga\")));\r\n\r\n    pm.expect(jsonData.data.stok)\r\n        .to.eql(Number(pm.environment.get(\"put_produk_stok\")));\r\n});"
                 ]
               }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const rawBody = pm.variables.replaceIn(pm.request.body.raw);\r\n\r\nconst body = JSON.parse(rawBody);\r\n\r\npm.environment.set(\"put_produk_code\", body.kode_produk);"
+                ]
+              }
             }
           ],
           "request": {
@@ -175,7 +184,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"nama_produk\": \"{{put_produk_nama}}\",\n    \"harga\": {{put_produk_harga}},\n    \"stok\": {{put_produk_stok}},\n    \"kategori_id\": {{kategori_id}},\n    \"kode_produk\": \"{{put_produk_code}}\"\n}",
+              "raw": "{\n    \"nama_produk\": \"{{put_produk_nama}}\",\n    \"harga\": {{put_produk_harga}},\n    \"stok\": {{put_produk_stok}},\n    \"kategori_id\": {{kategori_id}},\n    \"kode_produk\": \"{{prefix_produk_code}}-{{$timestamp}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -703,7 +712,7 @@
                 "produk"
               ]
             },
-            "description": "StartFragment **(23503)**EndFragment"
+            "description": "StartFragment**(23503)**EndFragment"
           },
           "response": []
         },
@@ -742,7 +751,7 @@
                 "produk"
               ]
             },
-            "description": "StartFragment **(23505)**EndFragment"
+            "description": "StartFragment**(23505)**EndFragment"
           },
           "response": []
         },
